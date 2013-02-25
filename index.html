@@ -19,10 +19,21 @@
 <script>
 
 $(document).ready(function() {
+	$.ajax({
+		url: "backliftapp/database",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			for(var i = 0; i < data.length; i++) {
+				addTeamToTable(data[i]);
+			}
 
+		}
+	}); //End of ajax
 
+	
 	$('#submitData').click(function() {
-		var teamObject = {
+		teamObject = {
 		teamName: $("#teamName").val(),
 		mgrFirstName: $("#mgrFirstName").val(),
 		mgrLastName: $("#mgrLastName").val(),
@@ -45,9 +56,18 @@ $(document).ready(function() {
 		clearForm();
 	}); // End of .click
 
+
+
+	function addTeamToTable(teamObject) {
+  // var percent = (parseInt(team.wins)/(parseInt(team.wins)+parseInt(team.losses))).toFixed(3);
+
+  $('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td><td>?</td><td>?</td><td>?</td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\')">delete</button></td></tr>').appendTo('#standings');
+	};// End of addTeamToTable
+
+
 	function addTeam (teamObject) {
-		$('#standings').append('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td></tr>');
-		}
+		$('#standings').append('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\')">delete</button></td></tr>');
+		}; // End of addTeamToTable
 
 	function clearForm () {
 		$('.team_inputs').each(function () {
@@ -58,7 +78,30 @@ $(document).ready(function() {
 	
 
 
+
+	// function printData () {
+	// 	$('#standings').html('');
+	// 	for (var index = 0; index < data.length; index++) {
+	// 		$('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td></tr>').append('#standings');
+	// 	}
+	// }
+
+	
+
+
 }); //End of doc.ready
+
+function deleteTeam (id) {
+		  var conf = confirm("Are you sure you want to delete this team?");
+		  if (conf == true) {
+		    $.ajax({
+		      url: "backliftapp/database/" + id,
+		      type: "DELETE",
+		      dataType: "json"
+		    });
+		    //$(this).closest('tr').remove();
+		};
+	} // End of deleteTeam
 
 </script>
 
@@ -69,7 +112,7 @@ $(document).ready(function() {
 
 	<div class="container">
 
-		<div class="row">
+		<div class="row blah">
 			<div class="span12 box">
 				<h1>Beer and Veggie Dogs? League</h1>
 				<h3>Standings</h3>
@@ -79,7 +122,7 @@ $(document).ready(function() {
 		<div class ="row">
 			<div class="span12 box">
 				<table id="standings" class="table table-striped">
-					<tr><th>Team</th><th>Wins</th><th>Loses</th><th>Season W/L</th></tr>
+					<tr><th>Team</th><th>Wins</th><th>Loses</th><th>Season W/L%</th><th>Edit</th></tr>
 				</table>
 			</div>
 		</div> <!-- End of row -->
