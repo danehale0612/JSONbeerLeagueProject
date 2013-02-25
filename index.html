@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+<link href="css/beerLeagueProject.css" rel="stylesheet">
+
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+
+<!-- <script type="text/javascript" src="test.js" /> -->
+
+
+
+<script>
+
+$(document).ready(function() {
+
+
+	$('#submitData').click(function() {
+		var teamObject = {
+		teamName: $("#teamName").val(),
+		mgrFirstName: $("#mgrFirstName").val(),
+		mgrLastName: $("#mgrLastName").val(),
+		phone: $("#phone").val(),
+		sponsor: $("#sponsor").val(),
+		zipCode: $("#zipCode").val(),
+		};
+
+		$.ajax({
+			url: "backliftapp/database",
+			type: "POST",
+			dataType: "json",
+			data: teamObject,
+			success: function (data) {
+				addTeam(data);
+			}
+		});
+
+
+		clearForm();
+	}); // End of .click
+
+	function addTeam (teamObject) {
+		$('#standings').append('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td></tr>');
+		}
+
+	function clearForm () {
+		$('.team_inputs').each(function () {
+			$(this).val('');
+		})
+	}; // End of clearForm
+
+	
+
+
+}); //End of doc.ready
+
+</script>
+
+
+</head>
+
+<body>
+
+	<div class="container">
+
+		<div class="row">
+			<div class="span12 box">
+				<h1>Beer and Veggie Dogs? League</h1>
+				<h3>Standings</h3>
+			</div>
+		</div> <!--end of row -->
+
+		<div class ="row">
+			<div class="span12 box">
+				<table id="standings" class="table table-striped">
+					<tr><th>Team</th><th>Wins</th><th>Loses</th><th>Season W/L</th></tr>
+				</table>
+			</div>
+		</div> <!-- End of row -->
+		<a href="#myModal" role="button" class="btn" data-toggle="modal">Add New Team</a>
+
+		<!-- <p><b>Results:</b> <span id="results"></span></p> -->
+ 
+				<!-- Modal -->
+				<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-header">
+				    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				    <h3 id="myModalLabel">Team Info:</h3>
+				  </div>
+				  <div class="modal-body">
+
+
+
+				  	<form>
+				    
+					  <label for="getTeamName">Team Name:</label>
+					  <input id="teamName" class="team_inputs" type="text" name="teamName">
+
+					  <h5 id="managerInfoTitle">Manager Info:</h5>
+
+					  <label for="getManagerFirstName" id ="managerFirstName">First Name:</label>
+					  <input id="mgrFirstName" class="team_inputs" type="text" name="managerFirstName">
+
+					  <label for="getManagerLastName" id="managerLastName" >Last Name:</label>
+					  <input id="mgrLastName" class="team_inputs" type="text" name="managerLastName">
+
+					  <label for="getPhoneNumber">Phone Number:</label>
+					  <input id="phone" class="team_inputs" type="text" name="phoneNumber">
+
+					  <label for="getSponsor">Sponsor:</label>
+					  <input id="sponsor" class="team_inputs" type="text" name="sponsor">
+
+					  <label for="getZipCode">Zip Code:</label>
+					  <input id="zipCode" class="team_inputs" type="text" name="zipCode"><br>
+
+					  
+					  <button id="submitData" type="submit" class="btn" data-dismiss="modal" aria-hidden="true">Submit</button>
+					</form>
+
+					
+				  <!-- <div class="modal-footer">
+				    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				    <button class="btn btn-primary">Save changes</button> -->
+				  </div>
+				</div>
+
+
+
+
+
+
+		<div class="row">
+			<div id="show" class="span12 box">
+		
+			
+	</div>
+	</div> <!--end of row-->
+
+
+
+	</div> <!-- End of container -->
+</body>
+</html>
