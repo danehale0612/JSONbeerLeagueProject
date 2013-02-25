@@ -66,7 +66,7 @@ $(document).ready(function() {
 
 
 	function addTeam (teamObject) {
-		$('#standings').append('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\')">delete</button></td></tr>');
+		$('#standings').append('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td><td>?</td><td>?</td><td>?</td></td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\')">delete</button></td></tr>');
 		}; // End of addTeamToTable
 
 	function clearForm () {
