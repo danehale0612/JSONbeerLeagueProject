@@ -4,6 +4,7 @@
 <head>
 
 <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="js/schedule.js"></script>
 
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
@@ -20,31 +21,49 @@
 
 $(document).ready(function() {
 
-	var leagueLength = 0;
 
-		$.ajax({
-		url: "backliftapp/database",
-		type: "GET",
-		dataType: "json",
-		success: function (data) {
-			for(var i = 0; i < data.length; i++) {
-				addTeamToTable(data[i]);
-				leagueLength = data.length;
-			}
+	//************************ Global variables *****************
 
+	var league = new Array();
+	var s = new Array(); // variable for schedule
+
+
+
+
+	//**************** GET ajax *******************
+
+
+	$.ajax({
+	url: "backliftapp/database",
+	type: "GET",
+	dataType: "json",
+	success: function (data) {
+		for(var i = 0; i < data.length; i++) {
+			addTeamToTable(data[i]);
 		}
+		league = data;
+		schedule();
+	}
+
 	}); //End of ajax
 
+
+
+	//************** League Full click function ***************
+
 	$('a.btn').click(function() {
-		if (leagueLength<8) {
-			console.log(leagueLength);
+		if (league.length<8) {
+			
 		} else {
 			$('a[data-toggle="modal"]').attr('data-toggle', 'false');
 			alert("League is Full. Delete a team to add another one.")
 		}
 		});//End of a.click
 
-	
+
+
+	//************* submit button and post funciton ***************
+
 	$('#submitData').click(function() {
 		teamObject = {
 		teamName: $("#teamName").val(),
@@ -62,45 +81,92 @@ $(document).ready(function() {
 			data: teamObject,
 			success: function (data) {
 				addTeam(data);
+				league.push(data);
 			}
 		});
 		
 		clearForm();
-		location.reload();
+
 	}); // End of submitData.click
 
 
 
-	function addTeamToTable(teamObject) {
-  // var percent = (parseInt(team.wins)/(parseInt(team.wins)+parseInt(team.losses))).toFixed(3);
 
-  $('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td><td>?</td><td>?</td><td>?</td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\')">delete</button></td></tr>').appendTo('#standings');
-	};// End of addTeamToTable
+	//***************** when page loads, what the GET ajax gets *****************
+
+
+	function addTeamToTable(teamObject) {
+	  // var percent = (parseInt(team.wins)/(parseInt(team.wins)+parseInt(team.losses))).toFixed(3);
+	  $("#standings table").html("");
+	  $('<tr><td class="teamName"> <a href="#" id="popOver" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td><td>?</td><td>?</td><td>?</td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\')">delete</button></td></tr>').appendTo('#standings');
+		};// End of addTeamToTable
+
+
+
+
+
+	//****************** function for what the "Add Team" form submits to the database***
 
 
 	function addTeam (teamObject) {
-		$('#standings').append('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td><td>?</td><td>?</td><td>?</td></td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\') ">delete</button></td></tr>');
+		$("#standings table").html("");
+		$('#standings').append('<tr><td class="teamName"> <a href="#" id="popOver" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td><td>?</td><td>?</td><td>?</td></td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\') ">delete</button></td></tr>');
 		}; // End of addTeamToTable
+
+
+
+	//**********************Clear Form function*****************************
 
 	function clearForm () {
 		$('.team_inputs').each(function () {
 			$(this).val('');
 		})
-	}; // End of clearForm
-
-	
+		}; // End of clearForm
 
 
 
-	// function printData () {
-	// 	$('#standings').html('');
-	// 	for (var index = 0; index < data.length; index++) {
-	// 		$('<tr><td class="teamName"> <a href="#" data-toggle="tooltip" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td></tr>').append('#standings');
-	// 	}
-	// }
 
-	
+	//******************* Schedule function **********************************
+	function schedule () {
 
+		if (league.length === 4) {
+			s = blankSchedule4;
+		} else if (league.length === 5 || league.length === 6) {
+			s = blankSchedule6;
+		} else if (league.length === 7 || league.length === 8) {
+			s = blankSchedule8;
+		} else {
+			$('<p>No schedule on current amount of teams.</p>').appendTo('#gameSchedules');
+		};
+
+		// End of if statement
+		
+		//****** Adding a table for schedule info ********
+		
+		for (var i = 0; i < s.length; i++) {
+			$('#gameSchedules').append('<div class="row"><div class="span3 box"><h4>Week'+(i+1)+'</h4></div></div><div class="row"><div class="span8 box"><table id="teamSchedules'+i+'" class="table table-striped"><tr><th>Match</th><th>score</th></tr></table></div></div>');
+
+			if (league.length % 2 === 0){ //even number of teams
+				var j = 0;
+			} else { //Odd number of teams
+				var j = 1;
+				$('#teamSchedules'+i+'').append('<tr><td>'+league[s[i][0][1]-2].teamName + '</td><td>Bye Week</td></tr>');
+			};
+
+			while (j < s[i].length) {
+
+			console.log(i);
+			$('#teamSchedules'+i+'').append('<tr><td>'+league[s[i][j][0]-1].teamName + ' vs ' + league[s[i][j][1]-1].teamName + '</td></tr>');
+
+			j++;
+		};
+
+
+
+		}; // End of for loop
+
+
+	}; // End of schedule funciton
 
 }); //End of doc.ready
 
@@ -112,10 +178,15 @@ function deleteTeam (id) {
 		      type: "DELETE",
 		      dataType: "json"
 		    });
-		    //$(this).closest('tr').remove();
+		    //$(this).siblings('td').remove();
 		};
 		location.reload();
 	} // End of deleteTeam
+
+
+
+	
+	
 
 </script>
 
@@ -140,8 +211,10 @@ function deleteTeam (id) {
 				</table>
 			</div>
 		</div> <!-- End of row -->
-		<a href="#myModal" role="button" class="btn" data-toggle="modal">Add New Team</a>
-
+		
+				<a href="#myModal" role="button" class="btn" data-toggle="modal">Add New Team</a>
+			
+		
 		<!-- <p><b>Results:</b> <span id="results"></span></p> -->
  
 				<!-- Modal -->
@@ -198,6 +271,21 @@ function deleteTeam (id) {
 			
 	</div>
 	</div> <!--end of row-->
+
+	
+	<div class="row">
+		<div class="span12 box">
+	           <h3>Game Schedule</h3>
+	    </div>
+	</div>
+
+
+
+	  <div id="gameSchedules">
+	  	
+	   </div>
+	    
+    
 
 
 
