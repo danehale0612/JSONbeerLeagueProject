@@ -26,6 +26,7 @@ $(document).ready(function() {
 
 	var league = new Array();
 	var s = new Array(); // variable for schedule
+	var score = new Array();
 
 
 
@@ -98,7 +99,7 @@ $(document).ready(function() {
 
 	function addTeamToTable(teamObject) {
 	  // var percent = (parseInt(team.wins)/(parseInt(team.wins)+parseInt(team.losses))).toFixed(3);
-	  $("#standings table").html("");
+	  $("#standings table").html(" ");
 	  $('<tr><td class="teamName"> <a href="#" id="popOver" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td><td>?</td><td>?</td><td>?</td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\')">delete</button></td></tr>').appendTo('#standings');
 
 	  	
@@ -113,7 +114,7 @@ $(document).ready(function() {
 
 
 	function addTeam (teamObject) {
-		$("#standings table").html("");
+		$("#standings table").html(" ");
 		$('#standings').append('<tr><td class="teamName"> <a href="#" id="popOver" title="Manager: '+teamObject.mgrFirstName+' '+teamObject.mgrLastName+'; '+'Phone Number: '+teamObject.phone+'; '+'Sponsor: '+teamObject.sponsor+'; '+'Zip Code: '+teamObject.zipCode+'">'+ teamObject.teamName +'</a></td><td>?</td><td>?</td><td>?</td></td>'+'<td><button id="deleteButton" type="submit" class="btn" data-dismiss="modal" aria-hidden="true" onclick="deleteTeam(\'' + teamObject.id + '\') ">delete</button></td></tr>');
 
 		schedule();
@@ -151,10 +152,11 @@ $(document).ready(function() {
 		$('#gameSchedules').html(" ");
 		
 		//****** Adding a table for schedule info ********
+		var week;
 		
 		for (var i = 0; i < s.length; i++) {
 			$('#gameSchedules').append('<div class="row"><div class="span3 box"><h4>Week'+(i+1)+'</h4></div><div class="span3 box"><a href="#myModal'+i+'" role="button" class="btn" data-toggle="modal">Enter Scores</a></div></div><div class="row"><div class="span8 box"><table id="teamSchedules'+i+'" class="table table-striped"><tr><th>Match</th><th>score</th></tr></table></div></div>');
-			$('.afterModal').before('<div id="myModal'+i+'" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3 id="myModalLabel">Enter Scores:</h3></div><div class="modal-body modalScores"><form><button id="enterScores'+i+'" type="submit" class="btn" data-dismiss="modal" aria-hidden="true">Submit</button></form>');
+			$('.afterModal').before('<div id="myModal'+i+'" class="modal hide fade scoreForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 320px;"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3 id="myModalLabel">Enter Scores:</h3></div><div class="modal-body modalScores"><form><button id="enterScores'+i+'" type="submit" class="btn submitScores" data-dismiss="modal" aria-hidden="true" style="margin-top: 20px;">Submit</button></form>');
 
 			if (league.length % 2 === 0){ //even number of teams
 				var j = 0;
@@ -170,23 +172,42 @@ $(document).ready(function() {
 					var awayTeam = league[s[i][j][1]-1].teamName;
 				} else {
 					var homeTeam = league[s[i][j][0]-2].teamName;
-					var awayTeam = league[s[i][j][1]-2].teamName
+					var awayTeam = league[s[i][j][1]-2].teamName;
 				};
 
 			
 			$('#teamSchedules'+i+'').append('<tr><td>'+ homeTeam + ' vs ' + awayTeam + '</td></tr>');
-			$('#enterScores'+i+'').before('<table id="scoresTable'+i+'"><tr><td>'+ homeTeam + ' vs ' + awayTeam + '</td></tr></table>');
+			$('#enterScores'+i+'').before('<table id="scoresTable'+i+'"><tr><td>'+ homeTeam + '<input id="homeTeamScore'+j+'" class="team_scores" type="text" name="homeTeamScore" style="width: 40px; margin: 0px 5px;"> <strong>vs</strong> ' + awayTeam + '<input id="awayTeamScore'+j+'" class="team_scores" type="text" name="awayTeamScore" style="width: 40px; margin: 0px 5px;"></td></tr></table>');
 			
-
+			
+			
 			j++;
-		};
-
+			
+			
+		};// End of while loop
 
 
 		}; // End of for loop
-
+		
 
 	}; // End of schedule funciton
+
+
+	$('.submitScores').click(function(){
+		$(this).parents('.scoreForm').par
+		scores = {
+			homeTeam0 = $("#myModal"+i + " .homeTeamScore0").val(),
+			awayTeam0 = $("#myModal"+i + " .awayTeamScore0").val(),
+			homeTeam1 = $("#myModal"+i + " .homeTeamScore1").val(),
+			awayTeam1 = $("#myModal"+i + " .awayTeamScore1").val(),
+			homeTeam2 = $("#myModal"+i + " .homeTeamScore2").val(),
+			awayTeam2 = $("#myModal"+i + " .awayTeamScore2").val(),
+			homeTeam3 = $("#myModal"+i + " .awayTeamScore3").val(),
+			awayTeam3 = $("#myModal"+i + " .awayTeamScore3").val()
+		};
+
+	}); //End of click
+
 
 }); //End of doc.ready
 
@@ -202,7 +223,6 @@ $(document).ready(function() {
 			};
 			location.reload();
 	} // End of deleteTeam
-
 
 
 	
