@@ -19,14 +19,18 @@
 
 <script>
 
+var s = new Array(); // variable for schedule
+	var score = {};
+	var week = 0;
+	var game = 0;
+
 $(document).ready(function() {
 
 
 	//************************ Global variables *****************
 
 	var league = new Array();
-	var s = new Array(); // variable for schedule
-	var score = new Array();
+	
 
 
 
@@ -133,6 +137,10 @@ $(document).ready(function() {
 
 
 
+	
+
+
+
 
 	//******************* Schedule function **********************************
 	function schedule () {
@@ -152,11 +160,13 @@ $(document).ready(function() {
 		$('#gameSchedules').html(" ");
 		
 		//****** Adding a table for schedule info ********
-		var week;
+		
 		
 		for (var i = 0; i < s.length; i++) {
+
+			
 			$('#gameSchedules').append('<div class="row"><div class="span3 box"><h4>Week'+(i+1)+'</h4></div><div class="span3 box"><a href="#myModal'+i+'" role="button" class="btn" data-toggle="modal">Enter Scores</a></div></div><div class="row"><div class="span8 box"><table id="teamSchedules'+i+'" class="table table-striped"><tr><th>Match</th><th>score</th></tr></table></div></div>');
-			$('.afterModal').before('<div id="myModal'+i+'" class="modal hide fade scoreForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 320px;"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3 id="myModalLabel">Enter Scores:</h3></div><div class="modal-body modalScores"><form><button id="enterScores'+i+'" type="submit" class="btn submitScores" data-dismiss="modal" aria-hidden="true" style="margin-top: 20px;">Submit</button></form>');
+			$('.afterModal').before('<div id="myModal'+i+'" class="modal hide fade scoreForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 320px;"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3 id="myModalLabel">Enter Scores:</h3></div><div class="modal-body modalScores"><form class="hello"><button id="enterScores'+i+'" type="submit" class="btn submitScores" data-dismiss="modal" aria-hidden="true" style="margin-top: 20px;" onClick="pass('+i+')">Submit</button></form></div></div>');
 
 			if (league.length % 2 === 0){ //even number of teams
 				var j = 0;
@@ -176,45 +186,56 @@ $(document).ready(function() {
 				};
 
 			
-			$('#teamSchedules'+i+'').append('<tr class="teamMatchUp"><td>'+ homeTeam + ' vs ' + awayTeam + '</td></tr>');
-			$('#enterScores'+i+'').before('<table id="scoresTable'+i+'"><tr><td>'+ homeTeam + '<input id="homeTeamScore'+j+'" class="team_scores" type="text" name="homeTeamScore" style="width: 40px; margin: 0px 5px;"> <strong>vs</strong> ' + awayTeam + '<input id="awayTeamScore'+j+'" class="team_scores" type="text" name="awayTeamScore" style="width: 40px; margin: 0px 5px;"></td></tr></table>');
+			$('#teamSchedules'+i+'').append('<tr id="teamMatchUp'+i+'-'+j+'"><td>'+ homeTeam + ' vs ' + awayTeam + '</td></tr>');
+			$('#enterScores'+i+'').before('<table id="scoresTable'+i+'" class="tableScores"><tr><td>'+ homeTeam + '<input id="homeTeamScore'+j+'" class="team_scores" type="text" name="homeTeamScore" style="width: 40px; margin: 0px 5px;"> <strong>vs</strong> ' + awayTeam + '<input id="awayTeamScore'+j+'" class="team_scores" type="text" name="awayTeamScore" style="width: 40px; margin: 0px 5px;"></td></tr></table>');
 			
 			
 			
 			j++;
 			
+			
 
 		};// End of while loop
-
+			game = j;
 
 		}; // End of for loop
 
-		// var score = $('input').filter(function() { return $(this).is('.team_scores') });
-		// $('.team_scores').each(function() {
-		// 	console.log(score);
-		// });
+		
 
+		$('.submitScores').click(function() {
+		var i = $(this).parents('.scoreForm').attr('id');
+		var z = new Array();
 
 		
-		$('.submitScores').click(function(){
-		var i = $(this).parents('.scoreForm').attr('id');
-		score = {
-			homeTeam0: $("#"+i + " #homeTeamScore0").val(),
-			awayTeam0: $("#"+i + " #awayTeamScore0").val(),
-			homeTeam1: $("#"+i + " #homeTeamScore1").val(),
-			awayTeam1: $("#"+i + " #awayTeamScore1").val(),
-			homeTeam2: $("#"+i + " #homeTeamScore2").val(),
-			awayTeam2: $("#"+i + " #awayTeamScore2").val(),
-			homeTeam3: $("#"+i + " #awayTeamScore3").val(),
-			awayTeam3: $("#"+i + " #awayTeamScore3").val()
-		};
-		console.log(i);
-		console.log(score);
 
-		$('.teamMatchUp').append('<td></td>')
+		validIds(z);
+		// console.log(i);
+		// console.log(z);
+		// console.log(z.length);
+		
+		pushToScore(z,i);
+
+		displayScore(week, game);
+		
+		
+
+		// console.log(score['homeTeam2']);
+
+			// 
+
+
+			// console.dir(score);
+
+				
+			console.log(score);
+		// for (var q = 0; q<s.length; q++) {
+		// 	$(this).parents('.scoreForm').nextAll('#gameSchedules').find('#teamSchedules'+w).find('.teamMatchUp'+g).append('<td>'+score.homeTeam+g+' - '+score.awayTeam+g+'</td>');
+		// };
+
+		
 	}); //End of click
 
-
+	
 	}; // End of schedule funciton
 
 	
@@ -244,6 +265,83 @@ $(document).ready(function() {
 	};
 
 	
+
+		function pass(i) {
+			week = i;
+			console.log(week);
+			};
+
+			function displayScore(week, game) {
+				for (var q = 0; q<game; q++) {
+			$('#teamMatchUp'+ week +'-'+q).append('<td>'+ score['homeTeam' + q] + ' - '+ score['awayTeam' + q] +'</td>');
+				// alert(score.awayTeam+q);
+			};
+			};
+
+			function pushToScore(z,i) {
+				hti = 0; //Home Team Index
+				ati = 0; // Away Team Index
+				for (var j = 0; j<z.length; j++) {
+					if (j % 2 === 0) {
+					score['homeTeam'+hti] = $("#"+i + " "+z[j]+"").val();
+					hti++;
+					} else {
+					score['awayTeam'+ati] = $("#"+i + " "+z[j]+"").val();
+					ati++;
+					}
+				};
+		};
+
+
+		function validIds (z) {
+		if ($('#homeTeamScore0').val() !== undefined) {
+			(z).push('#homeTeamScore0');
+		} else {
+			console.log('undefined');
+		}
+
+		if ($('#awayTeamScore0').val() !== undefined) {
+			(z).push('#awayTeamScore0');
+		} else {
+			console.log('undefined');
+		}
+
+		if ($('#homeTeamScore1').val() !== undefined) {
+			(z).push('#homeTeamScore1');
+		} else {
+			console.log('undefined');
+		}
+
+		if ($('#awayTeamScore1').val() !== undefined) {
+			(z).push('#awayTeamScore1');
+		} else {
+			console.log('undefined');
+		}
+
+		if ($('#homeTeamScore2').val() !== undefined) {
+			(z).push('#homeTeamScore2');
+		} else {
+			console.log('undefined');
+		}
+
+		if ($('#awayTeamScore2').val() !== undefined) {
+			(z).push('#awayTeamScore2');
+		} else {
+			console.log('undefined');
+		}
+
+		if ($('#homeTeamScore3').val() !== undefined) {
+			(z).push('#homeTeamScore3');
+		} else {
+			console.log('undefined');
+		}
+
+		if ($('#awayTeamScore3').val() !== undefined) {
+			(z).push('#awayTeamScore3');
+		} else {
+			console.log('undefined');
+		}
+		};// End of validIds function
 	
 
 </script>
@@ -349,11 +447,11 @@ $(document).ready(function() {
 
 
 
-		<div class="row afterModal">
+	<div class="row afterModal">
 			<div id="show" class="span12 box">
 		
 			
-	</div>
+			</div>
 	</div> <!--end of row-->
 
 	
