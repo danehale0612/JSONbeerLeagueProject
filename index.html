@@ -13,9 +13,6 @@
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
 
 
-<!-- <script type="text/javascript" src="test.js" /> -->
-
-
 
 <script>
 
@@ -119,6 +116,8 @@ $(document).ready(function() {
 	  	
 	};// End of addTeamToTable
 
+	//this function is called in: Get Ajax success Function;
+
 
 
 
@@ -136,15 +135,19 @@ $(document).ready(function() {
 		location.reload();
 	}; // End of addTable
 
+	//This function is called in: submit and post ajax success;
+
 
 
 	//**********************Clear Form function*****************************
 
 	function clearForm () {
 		$('.team_inputs').each(function () {
-			$(this).val('');
-		})
-		}; // End of clearForm
+				$(this).val('');
+			})
+	}; // End of clearForm
+
+		//This function is called in: $('.submitData').click function;
 
 
 
@@ -171,34 +174,34 @@ $(document).ready(function() {
 		
 		for (var i = 0; i < s.length; i++) {
 
-				addScoreForm(i);
+			addScoreForm(i);
 
-				if (league.length % 2 === 0){ //even number of teams
-					var j = 0;
-				} else { //Odd number of teams
-					var j = 1;
-					$('#teamSchedules'+i+'').append('<tr><td>'+league[s[i][0][1]-2].teamName + '</td><td>Bye Week</td></tr>');
+			if (league.length % 2 === 0){ //even number of teams
+				var j = 0;
+			} else { //Odd number of teams
+				var j = 1;
+				$('#teamSchedules'+i+'').append('<tr><td>'+league[s[i][0][1]-2].teamName + '</td><td>Bye Week</td></tr>');
+			};
+
+			while (j < s[i].length) {
+
+				if (league.length % 2 === 0) {
+					var homeTeam = league[s[i][j][0]-1].teamName;
+					var awayTeam = league[s[i][j][1]-1].teamName;
+				} else {
+					var homeTeam = league[s[i][j][0]-2].teamName;
+					var awayTeam = league[s[i][j][1]-2].teamName;
 				};
 
-				while (j < s[i].length) {
-
-					if (league.length % 2 === 0) {
-						var homeTeam = league[s[i][j][0]-1].teamName;
-						var awayTeam = league[s[i][j][1]-1].teamName;
-					} else {
-						var homeTeam = league[s[i][j][0]-2].teamName;
-						var awayTeam = league[s[i][j][1]-2].teamName;
-					};
-
-				
+			
 				$('#teamSchedules'+i+'').append('<tr id="teamMatchUp'+i+'-'+j+'"><td>'+ homeTeam + ' vs ' + awayTeam + '</td></tr>');
 				$('#enterScores'+i+'').before('<table id="scoresTable'+i+'" class="tableScores"><tr><td>'+ homeTeam + '<input id="homeTeamScore'+j+'" class="team_scores" type="text" name="homeTeamScore" style="width: 40px; margin: 0px 5px;"> <strong>vs</strong> ' + awayTeam + '<input id="awayTeamScore'+j+'" class="team_scores" type="text" name="awayTeamScore" style="width: 40px; margin: 0px 5px;"></td></tr></table>');
 				
 				
 				
 				j++;
-				
-				
+			
+			
 			};// End of while loop
 
 
@@ -232,6 +235,8 @@ $(document).ready(function() {
 	
 	}; // End of schedule funciton
 
+	//This function is called in: Get Ajax function, submit and post ajax function, addTeam function;
+
 
 	
 
@@ -253,7 +258,9 @@ $(document).ready(function() {
 			    //$(this).siblings('td').remove();
 			};
 			location.reload();
-	} // End of deleteTeam
+	}; // End of deleteTeam
+
+	//This function is used in: addTeamToTable function, addTeam function;
 
 
 	//************************ Creating a place to enter scores Function *****************
@@ -263,6 +270,8 @@ $(document).ready(function() {
 			$('#gameSchedules').append('<div class="row"><div class="span3 box"><h4>Week'+(i+1)+'</h4></div><div class="span3 box"><a href="#myModal'+i+'" role="button" class="btn" data-toggle="modal">Enter Scores</a></div></div><div class="row"><div class="span8 box"><table id="teamSchedules'+i+'" class="table table-striped"><tr><th>Match</th><th>score</th></tr></table></div></div>');
 				$('.afterModal').before('<div id="myModal'+i+'" class="modal hide fade scoreForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 320px;"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3 id="myModalLabel">Enter Scores:</h3></div><div class="modal-body modalScores"><form class="hello"><button id="enterScores'+i+'" type="submit" class="btn submitScores" data-dismiss="modal" aria-hidden="true" style="margin-top: 20px;" onClick="pass('+i+')">Submit</button></form></div></div>');
 		};
+
+		//This function is used in: schedule function;
 
 
 
@@ -274,6 +283,8 @@ $(document).ready(function() {
 			week = i;
 			console.log(week);
 		}; // End of pass function
+
+		//This function is used in: addScoreForm function;
 
 
 	//************************ Show scores on page Function *****************
@@ -291,6 +302,8 @@ $(document).ready(function() {
 				};
 			}
 		};//End of displayScore function
+
+		//This function is used in: $('.submitScores').click function;
 
 
 
@@ -311,6 +324,8 @@ $(document).ready(function() {
 				// calculateWinLoss(hti, );
 			};
 		}; // End of push to Score
+
+		//This function is used in: $('.submitScores').click function;
 
 
 
@@ -369,6 +384,9 @@ $(document).ready(function() {
 		};// End of validIds function
 
 
+		//This funciton is used in $('.submitScores').click function;
+
+
 		//************************ Clear out scores from form after submit Function *****************
 
 
@@ -377,6 +395,8 @@ $(document).ready(function() {
 			$(this).val('');
 			})
 		};
+
+		//This function is used in: $('.submitScores').click function;
 
 
 
