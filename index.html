@@ -19,21 +19,21 @@
 
 <script>
 
-var s = new Array(); // variable for schedule
+
+//************************ Global variables *****************
+
+
+	var league = new Array();
+	var s = new Array(); // variable for schedule
 	var score = {};
 	var week = 0;
 	var game = 0;
 
+
+
+
 $(document).ready(function() {
-
-
-	//************************ Global variables *****************
-
-	var league = new Array();
 	
-
-
-
 
 	//**************** GET ajax *******************
 
@@ -164,7 +164,6 @@ $(document).ready(function() {
 		
 		for (var i = 0; i < s.length; i++) {
 
-			
 			$('#gameSchedules').append('<div class="row"><div class="span3 box"><h4>Week'+(i+1)+'</h4></div><div class="span3 box"><a href="#myModal'+i+'" role="button" class="btn" data-toggle="modal">Enter Scores</a></div></div><div class="row"><div class="span8 box"><table id="teamSchedules'+i+'" class="table table-striped"><tr><th>Match</th><th>score</th></tr></table></div></div>');
 			$('.afterModal').before('<div id="myModal'+i+'" class="modal hide fade scoreForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 320px;"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3 id="myModalLabel">Enter Scores:</h3></div><div class="modal-body modalScores"><form class="hello"><button id="enterScores'+i+'" type="submit" class="btn submitScores" data-dismiss="modal" aria-hidden="true" style="margin-top: 20px;" onClick="pass('+i+')">Submit</button></form></div></div>');
 
@@ -209,28 +208,19 @@ $(document).ready(function() {
 		
 
 		validIds(z);
-		// console.log(i);
-		// console.log(z);
-		// console.log(z.length);
+		
 		
 		pushToScore(z,i);
 
-		displayScore(week, game);
+		displayScore(week, game, league);
 		
 		
 
-		// console.log(score['homeTeam2']);
-
-			// 
-
-
-			// console.dir(score);
+		
 
 				
 			console.log(score);
-		// for (var q = 0; q<s.length; q++) {
-		// 	$(this).parents('.scoreForm').nextAll('#gameSchedules').find('#teamSchedules'+w).find('.teamMatchUp'+g).append('<td>'+score.homeTeam+g+' - '+score.awayTeam+g+'</td>');
-		// };
+	
 
 		
 	}); //End of click
@@ -271,12 +261,18 @@ $(document).ready(function() {
 			console.log(week);
 			};
 
-			function displayScore(week, game) {
+		function displayScore(week, game, league) {
+			console.log(game);
+			if (league.length % 2 === 0) {
 				for (var q = 0; q<game; q++) {
-			$('#teamMatchUp'+ week +'-'+q).append('<td>'+ score['homeTeam' + q] + ' - '+ score['awayTeam' + q] +'</td>');
-				// alert(score.awayTeam+q);
-			};
-			};
+					$('#teamMatchUp'+ week +'-'+q).append('<td>'+ score['homeTeam' + q] + ' - '+ score['awayTeam' + q] +'</td>');
+				};
+			} else {
+				for (var q = 0; q<game; q++) {
+					$('#teamMatchUp'+ week +'-'+q).append('<td>'+ score['homeTeam' + [q-1]] + ' - '+ score['awayTeam' + [q-1]] +'</td>');
+				};
+			}
+		};
 
 			function pushToScore(z,i) {
 				hti = 0; //Home Team Index
