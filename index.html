@@ -101,6 +101,8 @@ $(document).ready(function() {
 
 	}); // End of submitData.click
 
+	
+
 
 
 
@@ -151,7 +153,11 @@ $(document).ready(function() {
 
 
 	//******************* Schedule function **********************************
-	function schedule () {
+	function schedule() {
+
+		var homeTeamsPlayed = new Array();
+		var awayTeamsPlayed = new Array();
+		
 
 		if (league.length === 4) {
 			s = blankSchedule4;
@@ -172,8 +178,11 @@ $(document).ready(function() {
 		
 		
 		for (var i = 0; i < s.length; i++) {
+			homeScores = new Array();
+			awayScores = new Array();
+			
 
-			addScoreForm(i);
+			addScoreForm(i, j);
 
 			if (league.length % 2 === 0){ //even number of teams
 				var j = 0;
@@ -193,49 +202,95 @@ $(document).ready(function() {
 				};
 
 			
-				$('#teamSchedules'+i+'').append('<tr id="teamMatchUp'+i+'-'+j+'"><td>'+ homeTeam + ' vs ' + awayTeam + '</td></tr>');
-				$('#enterScores'+i+'').before('<table id="scoresTable'+i+'" class="tableScores"><tr><td>'+ homeTeam + '<input id="homeTeamScore'+j+'" class="team_scores" type="text" name="homeTeamScore" style="width: 40px; margin: 0px 5px;"> <strong>vs</strong> ' + awayTeam + '<input id="awayTeamScore'+j+'" class="team_scores" type="text" name="awayTeamScore" style="width: 40px; margin: 0px 5px;"></td></tr></table>');
-				
-				
+				$('#teamSchedules'+i+'').append('<tr id="teamMatchUp'+i+'-'+j+'"><td>'+ homeTeam +' vs ' + awayTeam +'</td></tr>');
+				$('#enterScores'+i+'').before('<table id="scoresTable'+i+'" class="tableScores"><tr><td data-homeTeam="'+i+'">'+ homeTeam + '</td><td><input id="homeTeamScore'+j+'-'+i+'" class="team_scores" type="text" name="homeTeamScore" style="width: 40px; margin: 0px 5px;" data-game="'+j+'" data-week="'+i+'"></td><td><strong>vs</strong></td><td data-game="'+j+'" data-week="'+i+'">' + awayTeam + '</td><td><input id="awayTeamScore'+j+'-'+i+'" class="team_scores" type="text" name="awayTeamScore" style="width: 40px; margin: 0px 5px;" data-awayTeam="'+i+'"></td></tr></table>');
+		
 				
 				j++;
-			
+				
+				
 			
 			};// End of while loop
-
-
+			
+			
 			game = j;
 
 
 		}; // End of for loop
 
+		
+		// console.log(teamHome);
 
 		$('.submitScores').click(function() {
-			var i = $(this).parents('.scoreForm').attr('id');
+			var m = $(this).parents('.scoreForm').attr('id');
 			var z = new Array();
+			var thisWeek = $(this).attr('data-week');
+			var thisGame = $(this).attr('data-game');
+
+
+
+			validIds(z, thisWeek);
+			
+			pushToScore(z,m, homeTeam, awayTeam);
+
+			displayScore(thisWeek, game, thisGame);
+
+			organizeTeamNames(thisWeek);
 
 			
 
-			validIds(z);
-			
-			pushToScore(z,i);
-
-			displayScore(week, game, league);
+			// calculateWinLoss(teamHome, teamAway);
 			
 			clearScoreForm();
 					
-			console.log(score);
-	
 
 		
 		}); //End of click
 
-	
+		
+
+		
+		// console.log(league[0].id);
 	}; // End of schedule funciton
+
+	$('#resetSeason').click(function() {    
+
+
+				for (var k = 0; k < league.length; k++) {
+
+				$.ajax({
+				url: "/backliftapp/database/" +league[k].id,
+	            type: "PUT",
+	            dataType: "JSON",
+	            data: {
+	              wins: 0,
+	              losses: 0,
+	              percent: 0
+	            },
+	            success: function (data){
+
+	 
+					league = data;
+
+					console.log('Your standings have been reset.  Please refresh your broswer.')
+					
+
+	            }// End of PUT success function
+
+				})//End of ajax
+				
+			}// End of FOR loop
+			
+			});//End of click function
 
 	//This function is called in: Get Ajax function, submit and post ajax function, addTeam function;
 
-console.log(s);
+
+
+
+
+
+
 	
 
 }); //End of doc.ready
@@ -264,9 +319,9 @@ console.log(s);
 	//************************ Creating a place to enter scores Function *****************
 
 
-		function addScoreForm (i) {
-			$('#gameSchedules').append('<div class="row"><div class="span3 box"><h4>Week'+(i+1)+'</h4></div><div class="span3 box"><a href="#myModal'+i+'" role="button" class="btn" data-toggle="modal">Enter Scores</a></div></div><div class="row"><div class="span8 box"><table id="teamSchedules'+i+'" class="table table-striped"><tr><th>Match</th><th>score</th></tr></table></div></div>');
-				$('.afterModal').before('<div id="myModal'+i+'" class="modal hide fade scoreForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 320px;"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3 id="myModalLabel">Enter Scores:</h3></div><div class="modal-body modalScores"><form class="hello"><button id="enterScores'+i+'" type="submit" class="btn submitScores" data-dismiss="modal" aria-hidden="true" style="margin-top: 20px;" onClick="pass('+i+')">Submit</button></form></div></div>');
+		function addScoreForm (i, j) {
+			$('#gameSchedules').append('<div class="row"><div class="span3 box"><h4>Week'+(i+1)+'</h4></div><div class="span3 box"><a href="#myModal'+i+'" role="button" class="btn" data-toggle="modal">Enter Scores</a></div></div><div class="row"><div class="span8 box"><table id="teamSchedules'+i+'" class="table table-striped week"><tr><th>Match</th><th>score</th></tr></table></div></div>');
+				$('.afterModal').before('<div id="myModal'+i+'" class="modal hide fade scoreForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 320px;"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3 id="myModalLabel">Enter Scores:</h3></div><div class="modal-body modalScores"><form class="hello"><button id="enterScores'+i+'" type="submit" class="btn submitScores" data-dismiss="modal" aria-hidden="true" style="margin-top: 20px;" onClick="pass('+i+')" data-game="'+j+'" data-week="'+i+'">Submit</button></form></div></div>');
 		};
 
 		//This function is used in: schedule function;
@@ -279,7 +334,6 @@ console.log(s);
 
 		function pass(i) {
 			week = i;
-			console.log(week);
 		}; // End of pass function
 
 		//This function is used in: addScoreForm function;
@@ -288,39 +342,50 @@ console.log(s);
 	//************************ Show scores on page Function *****************
 
 
-		function displayScore(week, game, league) {
-			console.log(game);
+		// function displayScore(i, homeTeam, awayTeam)
+		// 	if(league.length % 2 === 0) {
+		// 		$(this).
+		// 	}
+
+
+
+		function displayScore(thisWeek, game, thisGame) {
 			if (league.length % 2 === 0) {
 				for (var q = 0; q<game; q++) {
-					$('#teamMatchUp'+ week +'-'+q).append('<td>'+ score['homeTeam' + q] + ' - '+ score['awayTeam' + q] +'</td>');
+					$('#teamMatchUp'+ thisWeek +'-'+q).append('<td>'+ score['homeTeam' + q] + ' - '+ score['awayTeam' + q] +'</td>');
 				};
 			} else {
 				for (var q = 0; q<game; q++) {
-					$('#teamMatchUp'+ week +'-'+q).append('<td>'+ score['homeTeam' + [q-1]] + ' - '+ score['awayTeam' + [q-1]] +'</td>');
+					$('#teamMatchUp'+ thisWeek +'-'+q).append('<td>'+ score['homeTeam' + [q-1]] + ' - '+ score['awayTeam' + [q-1]] +'</td>');
 				};
 			}
+
 		};//End of displayScore function
 
-		//This function is used in: $('.submitScores').click function;
+		// This function is used in: $('.submitScores').click function;
 
 
 
 		//************************ Push scores entered in form to score Array Function  *****************
 
 
-		function pushToScore(z,i) {
+		function pushToScore(z,m, homeTeam, awayTeam) {
 			hti = 0; //Home Team Index
 			ati = 0; // Away Team Index
+			var scoreValue;
 			for (var j = 0; j<z.length; j++) {
+				scoreValue = $("#"+m + " "+z[j]+"").val();
+
 				if (j % 2 === 0) {
-				score['homeTeam'+hti] = $("#"+i + " "+z[j]+"").val();
+				score['homeTeam'+hti] = scoreValue;
 				hti++;
 				} else {
-				score['awayTeam'+ati] = $("#"+i + " "+z[j]+"").val();
+				score['awayTeam'+ati] = scoreValue;
 				ati++;
 				}
-				// calculateWinLoss(hti, );
+				
 			};
+			
 		}; // End of push to Score
 
 		//This function is used in: $('.submitScores').click function;
@@ -331,51 +396,51 @@ console.log(s);
 		//************************ Push non-'undefined' IDs to Array Function *****************
 
 
-		function validIds (z) {
-		if ($('#homeTeamScore0').val() !== undefined) {
-			(z).push('#homeTeamScore0');
+		function validIds (z, thisWeek) {
+		if ($('#homeTeamScore0-'+thisWeek).val() !== undefined) {
+			(z).push('#homeTeamScore0-'+thisWeek);
 		} else {
 			console.log('undefined');
 		}
 
-		if ($('#awayTeamScore0').val() !== undefined) {
-			(z).push('#awayTeamScore0');
+		if ($('#awayTeamScore0-'+thisWeek).val() !== undefined) {
+			(z).push('#awayTeamScore0-'+thisWeek);
 		} else {
 			console.log('undefined');
 		}
 
-		if ($('#homeTeamScore1').val() !== undefined) {
-			(z).push('#homeTeamScore1');
+		if ($('#homeTeamScore1-'+thisWeek).val() !== undefined) {
+			(z).push('#homeTeamScore1-'+thisWeek);
 		} else {
 			console.log('undefined');
 		}
 
-		if ($('#awayTeamScore1').val() !== undefined) {
-			(z).push('#awayTeamScore1');
+		if ($('#awayTeamScore1-'+thisWeek).val() !== undefined) {
+			(z).push('#awayTeamScore1-'+thisWeek);
 		} else {
 			console.log('undefined');
 		}
 
-		if ($('#homeTeamScore2').val() !== undefined) {
-			(z).push('#homeTeamScore2');
+		if ($('#homeTeamScore2-'+thisWeek).val() !== undefined) {
+			(z).push('#homeTeamScore2-'+thisWeek);
 		} else {
 			console.log('undefined');
 		}
 
-		if ($('#awayTeamScore2').val() !== undefined) {
-			(z).push('#awayTeamScore2');
+		if ($('#awayTeamScore2-'+thisWeek).val() !== undefined) {
+			(z).push('#awayTeamScore2-'+thisWeek);
 		} else {
 			console.log('undefined');
 		}
 
-		if ($('#homeTeamScore3').val() !== undefined) {
-			(z).push('#homeTeamScore3');
+		if ($('#homeTeamScore3-'+thisWeek).val() !== undefined) {
+			(z).push('#homeTeamScore3-'+thisWeek);
 		} else {
 			console.log('undefined');
 		}
 
-		if ($('#awayTeamScore3').val() !== undefined) {
-			(z).push('#awayTeamScore3');
+		if ($('#awayTeamScore3-'+thisWeek).val() !== undefined) {
+			(z).push('#awayTeamScore3-'+thisWeek);
 		} else {
 			console.log('undefined');
 		}
@@ -396,11 +461,143 @@ console.log(s);
 
 		//This function is used in: $('.submitScores').click function;
 
+			function organizeTeamNames(thisWeek) {
+				if (league.length % 2 === 0) {
+
+					for (var q = 0; q < game; q++) {
+						var homeTeam = league[s[thisWeek][q][0]-1];
+						var homeTeamScore = $('#homeTeamScore'+q+'-'+thisWeek).val();
+						var awayTeam = league[s[thisWeek][q][1]-1];
+						var awayTeamScore = $('#awayTeamScore'+q+'-'+thisWeek).val();
+
+					console.log(homeTeam.teamName+' : '+ homeTeamScore+' vs '+awayTeam.teamName+' : '+awayTeamScore);
+
+					updateWinsLosses(homeTeam, homeTeamScore, awayTeam, awayTeamScore);
+					};	
+					
+				} else {
+
+					for (var q = 1; q < game; q++) {
+						var homeTeam = league[s[thisWeek][q][0]-2];
+						var homeTeamScore = $('#homeTeamScore'+q+'-'+thisWeek).val();
+						var awayTeam = league[s[thisWeek][q][1]-2];
+						var awayTeamScore = $('#awayTeamScore'+q+'-'+thisWeek).val();
 
 
-		// function calculateWinLoss(game, week) {
-		// 	console.log(league);
-		// }
+					console.log(homeTeam.teamName+' : '+homeTeamScore +' vs '+awayTeam.teamName+' : '+ awayTeamScore);
+
+					updateWinsLosses(homeTeam, homeTeamScore, awayTeam, awayTeamScore);
+					};
+				}
+
+
+			};
+
+
+			function updateWinsLosses (homeTeam, homeTeamScore, awayTeam, awayTeamScore) {
+
+				if (homeTeamScore > awayTeamScore) {
+
+					$.ajax({
+			          url: "/backliftapp/database/" + homeTeam.id,
+			          type: "PUT",
+			          dataType: "JSON",
+			          data: {
+			            wins: +homeTeam.wins + 1,
+			            percent: (+homeTeam.wins + 1) / (+homeTeam.wins + 1 + +homeTeam.losses)
+			          },
+			          success: function (data) {
+
+				          // increment away team losses
+				          $.ajax({
+				            url: "/backliftapp/database/" + awayTeam.id,
+				            type: "PUT",
+				            dataType: "JSON",
+				            data: {
+				              losses: +awayTeam.losses + 1,
+				              percent: (+awayTeam.wins) / (+awayTeam.wins + +awayTeam.losses + 1)
+				            },
+				            success: function (data) {
+
+					            // retrieve league data from server
+					            $.ajax({
+					              url: "/backliftapp/database",
+					              type: "GET",
+					              dataType: "JSON",
+					              success: function (data) {
+
+					                // fill league array with data
+					                league = data;
+
+					                // populate standings table
+
+					              }//End of GET success function
+					            }); // end GET
+
+
+					            }// End of PUT success function
+					          }); // end PUT
+
+
+					          }// End of PUT success function
+					        }); // end PUT
+
+				} else {
+
+					 // increment home team losses
+		        $.ajax({
+		          url: "/backliftapp/database/" + homeTeam.id,
+		          type: "PUT",
+		          dataType: "JSON",
+		          data: {
+		            losses: +homeTeam.losses + 1,
+		            percent: (+homeTeam.wins) / (+homeTeam.wins + +homeTeam.losses + 1)
+		          },
+		          success: function (data) {
+
+			          // increment away team wins
+			          $.ajax({
+			            url: "/backliftapp/database/" + awayTeam.id,
+			            type: "PUT",
+			            dataType: "JSON",
+			            data: {
+			              wins: +awayTeam.wins + 1,
+			              percent: (+awayTeam.wins + 1) / ((+awayTeam.wins + 1) + (+awayTeam.losses))
+			            },
+			            success: function (data) {
+
+				            // retrieve league data from server
+				            $.ajax({
+				              url: "/backliftapp/database",
+				              type: "GET",
+				              dataType: "JSON",
+				              success: function (data) {
+
+				                // fill league array with data
+				                league = data;
+
+				                // populate standings table
+				                schedule();
+
+				              }//End of GET success Function
+				            }); // end GET
+
+				            }//End of PUT success function
+				          }); // end PUT
+
+				          }// End of PUT success function
+				        }); // end PUT
+
+
+
+
+
+				}//End of IF statement
+ 
+
+			}; // End of updateWinsLosses
+
+			
 
 	
 
@@ -429,6 +626,8 @@ console.log(s);
 		</div> <!-- End of row -->
 		
 				<a href="#myModal" role="button" class="btn" data-toggle="modal">Add New Team</a>
+
+				<button id="resetSeason" class="btn">Reset Season</button>
 			
 		
 		<!-- <p><b>Results:</b> <span id="results"></span></p> -->
