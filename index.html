@@ -11,6 +11,7 @@
 <link href="css/beerLeagueProject.css" rel="stylesheet">
 
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/stupidtable.min.js"></script>
 
 
 
@@ -34,6 +35,8 @@
 
 
 $(document).ready(function() {
+
+
 	
 
 	//**************** GET ajax *******************
@@ -504,7 +507,7 @@ $(document).ready(function() {
 			          dataType: "JSON",
 			          data: {
 			            wins: +homeTeam.wins + 1,
-			            percent: (+homeTeam.wins + 1) / (+homeTeam.wins + 1 + +homeTeam.losses)
+			            percent: ((+homeTeam.wins + 1) / ((+homeTeam.wins + 1) + (+homeTeam.losses))).toFixed(2)*100
 			          },
 			          success: function (data) {
 
@@ -515,7 +518,7 @@ $(document).ready(function() {
 				            dataType: "JSON",
 				            data: {
 				              losses: +awayTeam.losses + 1,
-				              percent: (+awayTeam.wins) / (+awayTeam.wins + +awayTeam.losses + 1)
+				              percent: ((+awayTeam.wins) / ((+awayTeam.wins) + (+awayTeam.losses + 1))).toFixed(2)*100
 				            },
 				            success: function (data) {
 				            	
@@ -552,7 +555,7 @@ $(document).ready(function() {
 		          dataType: "JSON",
 		          data: {
 		            losses: +homeTeam.losses + 1,
-		            percent: (+homeTeam.wins) / (+homeTeam.wins + +homeTeam.losses + 1)
+		            percent: ((+homeTeam.wins) / ((+homeTeam.wins) + (+homeTeam.losses + 1))).toFixed(2)*100
 		          },
 		          success: function (data) {
 
@@ -563,7 +566,7 @@ $(document).ready(function() {
 			            dataType: "JSON",
 			            data: {
 			              wins: +awayTeam.wins + 1,
-			              percent: (+awayTeam.wins + 1) / ((+awayTeam.wins + 1) + (+awayTeam.losses))
+			              percent: ((+awayTeam.wins + 1) / ((+awayTeam.wins + 1) + (+awayTeam.losses))).toFixed(2)*100
 			            },
 			            success: function (data) {
 
@@ -600,7 +603,7 @@ $(document).ready(function() {
 
 			}; // End of updateWinsLosses
 
-			
+			$("#simpleTable").stupidtable();
 
 	}); //End of doc.ready
 
@@ -644,8 +647,12 @@ $(document).ready(function() {
 
 		<div class ="row">
 			<div class="span12 box">
-				<table id="standings" class="table table-striped">
-					<tr><th>Team</th><th>Wins</th><th>Loses</th><th>Season W/L%</th><th>Edit</th></tr>
+				<table id="simpleTable" class="table table-striped">
+					<thead>
+						<tr><th>Team</th><th>Wins</th><th>Loses</th><th data-sort="int">Season W/L%</th><th>Edit</th></tr>
+					</thead>
+					<tbody id="standings">
+					</tbody>
 				</table>
 			</div>
 		</div> <!-- End of row -->
